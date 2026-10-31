@@ -3,7 +3,7 @@
 Repositori ini berisi implementasi arsitektur **Zero Trust Security** pada level aplikasi menggunakan Node.js dan Express. Sistem ini bertindak sebagai Sistem Nilai yang mengimplementasikan API Gateway sebagai Policy Enforcement Point (PEP), memverifikasi setiap *request* (termasuk konteks perangkat dan waktu), dan menerapkan prinsip *Assume Breach* pada komunikasi antar-layanan.
 
 ## Prasyarat
-- Node.js (versi 18+ direkomendasikan)
+- Node.js (versi 22+ direkomendasikan)
 - npm (Node Package Manager)
 
 ## Instalasi

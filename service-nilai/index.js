@@ -71,6 +71,27 @@ app.get('/nilai', (req, res) => {
     }
 });
 
+// POST /nilai - Dosen mengisi data nilai baru pertama kali
+app.post('/nilai', (req, res) => {
+    const { mahasiswa_id, kelas_id, nilai } = req.body;
+    
+    // Validasi Role
+    if (req.user.role !== 'dosen') return res.status(403).json({ error: 'Hanya dosen yang dapat mengisi nilai' });
+
+    // Validasi kepemilikan kelas (Zero Trust RBAC)
+    const kelas = db.prepare('SELECT dosen_id FROM kelas WHERE id = ?').get(kelas_id);
+    if (!kelas) return res.status(404).json({ error: 'Kelas tidak ditemukan' });
+    if (kelas.dosen_id !== req.user.sub) return res.status(403).json({ error: 'Bukan kelas yang Anda ampu' });
+
+    try {
+        // Masukkan data baru ke database (default is_final = 0)
+        const info = db.prepare('INSERT INTO nilai (mahasiswa_id, kelas_id, nilai, is_final) VALUES (?, ?, ?, 0)').run(mahasiswa_id, kelas_id, nilai);
+        res.json({ message: 'Nilai berhasil diisi', id: info.lastInsertRowid });
+    } catch (error) {
+        res.status(500).json({ error: 'Gagal menyimpan nilai. Pastikan ID mahasiswa valid.' });
+    }
+});
+
 // PUT /nilai/:id - Dosen mengupdate nilai (Gateway sudah mengecek jam akses)[cite: 2]
 app.put('/nilai/:id', (req, res) => {
     const { id } = req.params;
